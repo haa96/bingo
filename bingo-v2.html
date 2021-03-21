@@ -1,0 +1,116 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <title>BINGO</title>
+</head>
+
+<body style="background: #2F7336;background: -webkit-linear-gradient(to right, #AA3A38, #2F7336);background: linear-gradient(to right, #AA3A38, #2F7336);">
+    <nav>
+        <ul id="ulId">
+          <button onclick="generateRandom(this)" id="new_game_random">Start game random </button>
+          <button onclick="generateSpec(this)" id="new_game_spec">Start game specific </button>
+          <button onclick="Resultwin(this)" id="i_won">end game win </button>
+          <button onclick="Resultloss(this)" id="i_lost">end game loss </button>
+        </ul>
+  </nav>
+
+ 
+  <script>
+
+
+  window.onload = function(){
+  document.getElementById("i_lost").style.display = "none";
+  document.getElementById("i_won").style.display = "none"; 
+}
+
+  function generateRandom(id){
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block"; 
+    generateGrid();
+
+
+}
+function generateGrid(){
+
+
+  var table = document.createElement("table");
+  table.setAttribute("id","bingoCard")
+  document.body.appendChild(table);
+  document.getElementById("bingoCard").style.border= "thin solid black";
+
+  var rows= 5;
+  var cols= 5;
+
+   var grid= [];
+   for(let i=0; i<rows;i++){
+     grid[i]= [];
+     for(let j=0; j<cols;j++){
+       grid[i][j]=null
+     }
+   }
+
+    var start=1;
+    var rand = Math.floor((Math.random() * 100) + 1);
+    for(var i =0; i<grid[0].length;i++){
+      for(var j =0; j<grid.length;j++){
+        grid[i][j]=rand;
+        rand=Math.floor((Math.random() * 50) + 50);
+      }
+    }
+    var header= new Array();
+    var tr = table.insertRow(-1);
+
+    header=['B','I','N','G','O'];
+
+    for (var i = 0; i < header.length; i++) {
+ 
+        var th = document.createElement('th');
+        th.innerHTML = header[i];
+        tr.appendChild(th);
+        }
+ 
+    //CELLS
+    for (var i = 0; i < rows ; i++) {
+      tr = table.insertRow(-1);
+    for (var j = 0; j < header.length; j++) {
+      var td = document.createElement('td');          
+      td = tr.insertCell(-1);
+      td.innerHTML = grid[i][j];                  
+            }
+        }
+
+}
+  
+  
+
+  
+  function generateSpec(id){
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block";
+  }
+
+  function Resultwin(id){
+    document.getElementById("new_game_random").style.display="block";
+    document.getElementById("new_game_spec").style.display="block";
+    document.getElementById("i_won").style.display="none";
+    document.getElementById("i_lost").style.display="none";
+  }
+
+  function Resultloss(id){
+    document.getElementById("new_game_random").style.display="block";
+    document.getElementById("new_game_spec").style.display="block";
+    document.getElementById("i_won").style.display="none";
+    document.getElementById("i_lost").style.display="none";
+  }
+
+
+
+  </script>
+    
+</body>
+</html>

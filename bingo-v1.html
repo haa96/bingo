@@ -1,0 +1,101 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>BINGO</title>
+</head>
+
+<body style="background: #2F7336;background: -webkit-linear-gradient(to right, #AA3A38, #2F7336);background: linear-gradient(to right, #AA3A38, #2F7336);">
+	<nav>
+        <ul>
+          <button onclick="generateRandom(this)" id="new_game_random">Start game random </button>
+          <button onclick="generateSpec(this)" id="new_game_spec">Start game specific </button>
+          <button onclick="Resultwin(this)" id="i_won">end game win </button>
+          <button onclick="Resultloss(this)" id="i_lost">end game loss </button>
+        </ul>
+  </nav>
+  <div id="myDiv"> </div>
+  <script>
+
+  window.onload = function(){
+  document.getElementById("i_lost").style.display = "none";
+  document.getElementById("i_won").style.display = "none"; 
+}
+
+  function generateRandom(id){
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block"; 
+    generateGrid();
+
+
+}
+function generateGrid(){
+  var rows= 6;
+  var cols= 5;
+  var grid= [];
+  for(let i=0; i<rows;i++){
+    grid[i]= [];
+    for(let j=0; j<cols;j++){
+      grid[i][j]=null
+    }
+  }
+
+    //ASSIGN VALUES
+    grid[0][0]= 'B';
+    grid[0][1]= 'I';
+    grid[0][2]= 'N';
+    grid[0][3]= 'G';
+    grid[0][4]= 'O';
+    var start=1;
+    for(var i =1; i<rows;i++){
+      for(var j =0; j<cols;j++){
+        grid[i][j]=start;
+        start=start+1;
+      }
+    }
+
+    var table = document.createElement("table");
+
+
+    //print
+    for(var i =0; i<rows;i++){
+      var tr = document.createElement("tr");
+      var row = table.insertRow(i);
+      var cell = row.insertRow(i)
+      for(var j =0; j<cols;j++){
+        var td = document.createElement("td");
+        td.setAttribute(grid[i][j]);
+        row.appendChild(td);
+    }
+  }
+
+  function generateSpec(id){
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block";
+  }
+
+  function Resultwin(id){
+    document.getElementById("new_game_random").style.display="block";
+    document.getElementById("new_game_spec").style.display="block";
+    document.getElementById("i_won").style.display="none";
+    document.getElementById("i_lost").style.display="none";
+  }
+
+  function Resultloss(id){
+    document.getElementById("new_game_random").style.display="block";
+    document.getElementById("new_game_spec").style.display="block";
+    document.getElementById("i_won").style.display="none";
+    document.getElementById("i_lost").style.display="none";
+  }
+
+  function generate2dArray(){
+
+  }
+
+  </script>
+</body>
+</html>

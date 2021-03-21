@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>BINGO</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+	<nav>
+        <ul id="ulId">
+          <button onclick="generateRandom(this)" id="new_game_random">Start game random </button>
+          <button onclick="generateSpec(this)" id="new_game_spec">Start game specific </button>
+          <button onclick="Resultwin(this)" id="i_won">end game win </button>
+          <button onclick="Resultloss(this)" id="i_lost">end game loss </button>
+        </ul>
+  </nav>
+  <script>
+  var bingo = false;
+  var used = new Array(76);
+  var win=localStorage.getItem("wins");
+  var loss=localStorage.getItem("losses");
+
+window.onload = function(){
+  document.getElementById("i_lost").style.display = "none";
+  document.getElementById("i_won").style.display = "none"; 
+  scoreTable();
+  if(localStorage.getItem("wins")==null){document.getElementById("td0").innerHTML='0';}
+  else {document.getElementById("td0").innerHTML=localStorage.getItem("wins");}
+  if(localStorage.getItem("losses")==null){document.getElementById("td1").innerHTML='0';}
+  else {document.getElementById("td1").innerHTML=localStorage.getItem("losses");}
+
+ }
+function generateRandom(id){
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block"; 
+    generateGrid();
+}
+function generateGrid(){
+
+  var table = document.createElement("table");
+  table.setAttribute("id","Card")
+  document.body.appendChild(table);
+  var rows= 5;
+  var cols= 5;
+ 
+  var header= new Array();
+  var tr = table.insertRow(-1);
+  header=['B','I','N','G','O'];
+  for (var i = 0; i < header.length; i++) {
+      var th = document.createElement('th');
+      th.setAttribute("id",header[i]);
+      th.innerHTML = header[i];
+      tr.appendChild(th);
+  }
+    var count = 0;
+    //Construct CELLS
+    for (var i = 0; i < rows ; i++) {
+      tr = table.insertRow(-1);
+      for (var j = 0; j < header.length; j++) {
+        var td = document.createElement('td'); 
+        var input = document.createElement('input');
+        input.type="button";
+        input.setAttribute("id",'c'+count);
+        var cell = input.id;
+        if(input.id!=="c12")
+        {input.addEventListener("click", clickHandler.bind(this, cell), true);}
+        td = tr.insertCell(-1);
+        td.appendChild(input); 
+        count=count+1; 
+
+      }
+    }
+    for (var i = 0; i < 25; i++) 
+        fill(i);
+    document.getElementById("c12").value="FREE";
+    document.getElementById("c12").style.backgroundColor="red"; 
+}
+
+function fill(cell) {
+  var arr = new Array(0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4);
+  var curr = "c" + cell;
+  rand = (arr[cell]*15) +randGen();
+  while (used[rand] == true) {rand =(arr[cell]*15)+randGen();}
+  used[rand] = true;
+  document.getElementById(curr).value =rand;
+}
+
+function randGen() {return Math.floor((Math.random()*15)+1);}
+function clickHandler(cell){
+  var curr = document.getElementById(cell);
+  if (curr.style.backgroundColor=="")
+    curr.style.backgroundColor="green";
+  else
+    curr.style.backgroundColor="";
+  return;
+ }
+  
+function generateSpec(id){
+
+  var validated=false;
+  var tempArr = ['B','I','N','G','O'];
+  var response="";
+  var regExpHeader = "";
+  var regExpCells = "";
+  var tic=1;
+
+  while(true){
+    response = prompt("Enter your Bingo card: (Ex: B(15,9,8,7,14)I(25,21,20,22,29)N(38,41,f,34,31)G(60,57,48,56,49)O(69,70,72,64,71)");
+    regExpHeader = response.match(/[BINGObingo]/g);
+    regExpCells = response.match(/[\df]+/g);
+    regExpCells[12]=40;
+
+    //handles duplicates columns names
+    for(var i=0; i<regExpHeader.length;i++){
+      if(regExpHeader[i]==regExpHeader[i+tic])
+        {
+          alert("Column name error, columns can only be named [B-I-N-G-O]...");
+          validated=true;
+        }
+      tic++;
+    }
+    //handles if there is exactly 5 columns
+    if(regExpHeader.length < 5)
+    {
+      alert("One of columns is missing!! retry with exactly 5 columns BINGO card...");
+      validated=true;
+    }
+    if(regExpHeader.length > 5)
+    {
+      alert("extra columns is entered!! retry with exactly 5 columns BINGO card...");
+      validated=true;
+    }
+    //handles if there are duplicates numbers in a column
+    tic=1;
+    for(var i=0; i<regExpCells.length;i++){
+      if(regExpCells[i]==regExpCells[i+tic])
+      {
+        alert("Bingo card should not have duplicates!");
+        validated=true;
+      }
+      tic++;
+    }
+    
+    //handles ranges in each column
+    for(var i=0; i<regExpCells.length;i++){
+      if(i<5){
+        if(regExpCells[i]>15){alert("Please pick numbers between 1-15 in B-column!!");validated=true;}
+      }
+      if(i>4 && i<10){
+        if(regExpCells[i]>30){alert("Please pick numbers between 16-30 in I-column!!");validated=true;}
+        if(regExpCells[i]<16){alert("Please pick numbers between 16-30 in I-column!!");validated=true;}
+      }
+      if(i>9 && i<15){
+        if(regExpCells[i]>45){alert("Please pick numbers between 31-45 in N-column!!");validated=true;}
+        if(regExpCells[i]<31){alert("Please pick numbers between 31-45 in N-column!!");validated=true;}
+      }
+      if(i>14 && i<20){
+        if(regExpCells[i]>60){alert("Please pick numbers between 46-60 in G-column!!");validated=true;}
+        if(regExpCells[i]<46){alert("Please pick numbers between 46-60 in G-column!!");validated=true;}
+      }
+      if(i>19 && i<25){
+        if(regExpCells[i]>75){alert("Please pick numbers between 61-75 in O-column!!");validated=true;}
+        if(regExpCells[i]<61){alert("Please pick numbers between 61-75 in O-column!!");validated=true;}
+      }
+    }//FOR
+    if (validated==false)
+      break;
+  }//WHILE
+    generateGridSpec(regExpHeader,regExpCells);
+    document.getElementById("new_game_random").style.display="none";
+    document.getElementById("new_game_spec").style.display="none";
+    document.getElementById("i_won").style.display="block";
+    document.getElementById("i_lost").style.display="block"; 
+  }
+
+function Resultwin(id){
+  
+  Bingo();
+  while (bingo==true){
+  var score = win;
+  var wins = localStorage.getItem("wins");
+  if(wins !== null){
+    if (score > wins) { localStorage.setItem("wins", score); }
+  }
+  else  {localStorage.setItem("wins", score);}
+
+  document.getElementById("new_game_random").style.display="block";
+  document.getElementById("new_game_spec").style.display="block";
+  document.getElementById("i_won").style.display="none";
+  document.getElementById("i_lost").style.display="none";
+
+  if(localStorage.getItem("wins")==null){document.getElementById("td0").innerHTML='0';}
+  else {document.getElementById("td0").innerHTML=localStorage.getItem("wins");}
+  if(localStorage.getItem("losses")==null){document.getElementById("td1").innerHTML='0';}
+  else {document.getElementById("td1").innerHTML=localStorage.getItem("losses");}
+
+  var temp = document.getElementById("Card");
+  temp.remove();
+    }//WHILE 
+  }
+
+function Resultloss(id){
+  document.getElementById("new_game_random").style.display="block";
+  document.getElementById("new_game_spec").style.display="block";
+  document.getElementById("i_won").style.display="none";
+  document.getElementById("i_lost").style.display="none";
+  var temp = document.getElementById("Card");
+  temp.remove();
+  loss++;
+  var score = loss;
+  var losses = localStorage.getItem("losses");
+  if(losses !== null){
+    if (score > losses) { localStorage.setItem("losses", score);  }
+  }
+  else { localStorage.setItem("losses", score);}
+  if(localStorage.getItem("wins")==null){document.getElementById("td0").innerHTML='0';}
+  else {document.getElementById("td0").innerHTML=localStorage.getItem("wins");}
+  if(localStorage.getItem("losses")==null){document.getElementById("td1").innerHTML='0';}
+  else {document.getElementById("td1").innerHTML=localStorage.getItem("losses");}
+  }
+
+
+function generateGridSpec(regExpHeader,regExpCells){
+  var table = document.createElement("table");
+  table.setAttribute("id","Card")
+  document.body.appendChild(table);
+  var rows= 5;
+  var cols= 5;
+  var tr = table.insertRow(-1);
+  for (var i = 0; i < regExpHeader.length; i++) {
+      var th = document.createElement('th');
+      th.setAttribute("id",regExpHeader[i]);
+      th.innerHTML = regExpHeader[i];
+      tr.appendChild(th);
+  }
+    var count = 0;
+    //Construct CELLS
+    for (var i = 0; i < rows ; i++) {
+      tr = table.insertRow(-1);
+      for (var j = 0; j < regExpHeader.length; j++) {
+        var td = document.createElement('td'); 
+        var input = document.createElement('input');
+        input.type="button";
+        input.setAttribute("id",'c'+count);
+        var cell = input.id;
+        if(input.id!=="c12")
+        {input.addEventListener("click", clickHandler.bind(this, cell), true);}
+        td = tr.insertCell(-1);
+        td.appendChild(input); 
+        count=count+1; 
+
+      }
+    }
+    document.getElementById("c0").value =regExpCells[0];
+    document.getElementById("c5").value =regExpCells[1];
+    document.getElementById("c10").value =regExpCells[2];
+    document.getElementById("c15").value =regExpCells[3];
+    document.getElementById("c20").value =regExpCells[4];
+
+    document.getElementById("c1").value =regExpCells[5];
+    document.getElementById("c6").value =regExpCells[6];
+    document.getElementById("c11").value =regExpCells[7];
+    document.getElementById("c16").value =regExpCells[8];
+    document.getElementById("c21").value =regExpCells[9];
+
+    document.getElementById("c2").value =regExpCells[10];
+    document.getElementById("c7").value =regExpCells[11];
+    document.getElementById("c12").value =regExpCells[12];
+    document.getElementById("c17").value =regExpCells[13];
+    document.getElementById("c22").value =regExpCells[14];
+
+    document.getElementById("c3").value =regExpCells[15];
+    document.getElementById("c8").value =regExpCells[16];
+    document.getElementById("c13").value =regExpCells[17];
+    document.getElementById("c18").value =regExpCells[18];
+    document.getElementById("c23").value =regExpCells[19];
+
+    document.getElementById("c4").value =regExpCells[20];
+    document.getElementById("c9").value =regExpCells[21];
+    document.getElementById("c14").value =regExpCells[22];
+    document.getElementById("c19").value =regExpCells[23];
+    document.getElementById("c24").value =regExpCells[24];
+
+    document.getElementById("c12").value="FREE";
+    document.getElementById("c12").style.backgroundColor="red"; 
+}
+
+function randGen() {
+  return Math.floor((Math.random()*15)+1); 
+}
+function Bingo(){
+// vertical
+  if( c0.style.backgroundColor=="green" && c5.style.backgroundColor=="green" && c10.style.backgroundColor=="green" && c15.style.backgroundColor=="green" && c20.style.backgroundColor =="green"){
+    alert("BINGOOOOOOOOOOO ---- B Vertical");
+    win++;
+    bingo = true;  
+     }
+  else if( c1.style.backgroundColor == "green" && c6.style.backgroundColor=="green" && c11.style.backgroundColor== "green" && c16.style.backgroundColor== "green" && c21.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- I Vertical");
+    win++;
+    bingo = true; 
+     }
+  else  if( c2.style.backgroundColor =="green" && c7.style.backgroundColor=="green" && (c12.style.backgroundColor=="green" || c12.style.backgroundColor=="red") && c17.style.backgroundColor =="green" && c22.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- N Vertical");
+    win++;
+    bingo = true;   
+     }
+  else if( c3.style.backgroundColor =="green" && c8.style.backgroundColor=="green" && c13.style.backgroundColor=="green" && c18.style.backgroundColor =="green" && c23.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- G Vertical");
+    win++;
+    bingo = true;   
+     }
+  else if( c4.style.backgroundColor =="green" && c9.style.backgroundColor=="green" && c14.style.backgroundColor=="green" && c19.style.backgroundColor =="green" && c24.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- O Vertical");
+    win++;
+    bingo = true;  
+     }
+
+//Horizental
+  else if( c0.style.backgroundColor =="green" && c1.style.backgroundColor=="green" && c2.style.backgroundColor=="green" && c3.style.backgroundColor =="green" && c4.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Row 1");
+    win++;
+    bingo = true; 
+      }
+  else if( c5.style.backgroundColor =="green" && c6.style.backgroundColor=="green" && c7.style.backgroundColor=="green" && c8.style.backgroundColor =="green" && c9.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Row 2");
+    win++;
+    bingo = true;  
+      }
+  else  if( c10.style.backgroundColor =="green" && c11.style.backgroundColor=="green" && (c12.style.backgroundColor=="green" || c12.style.backgroundColor=="red") && c13.style.backgroundColor =="green" && c14.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Row 3");
+    win++;
+    bingo = true;  
+     }
+  else if( c15.style.backgroundColor =="green" && c16.style.backgroundColor=="green" && c17.style.backgroundColor=="green" && c18.style.backgroundColor =="green" && c19.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Row 4");
+    win++;
+    bingo = true;
+      }
+  else if( c20.style.backgroundColor =="green" && c21.style.backgroundColor=="green" && c22.style.backgroundColor=="green" && c23.style.backgroundColor =="green" && c24.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Row 5");
+    win++;
+    bingo = true;   
+      }
+
+// Diagonal
+  else if( c0.style.backgroundColor =="green" && c6.style.backgroundColor=="green" && (c12.style.backgroundColor=="green" || c12.style.backgroundColor=="red") && c18.style.backgroundColor =="green" && c24.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Diagonal");
+    win++;
+    bingo = true;
+      }
+  else if( c4.style.backgroundColor =="green" && c8.style.backgroundColor=="green" && (c12.style.backgroundColor=="green" || c12.style.backgroundColor=="red") && c16.style.backgroundColor =="green" && c20.style.backgroundColor== "green"){
+    alert("BINGOOOOOOOOOOO ---- Diagonal");
+    win++;
+    bingo = true;
+      }
+  else 
+     {  
+    alert("NO BINGO!! Try again...");
+    bingo=false;
+    return;
+      }
+}//BINGO 
+
+function scoreTable(){
+
+  var table = document.createElement("table");
+  table.setAttribute("id","score")
+  document.body.appendChild(table);
+  var arr= new Array();
+  var tr = table.insertRow(-1);
+  arr=['W','L'];
+  for (var i = 0; i < arr.length; i++) {
+      var th = document.createElement('th');
+      th.setAttribute("id",arr[i]);
+      th.innerHTML = arr[i];
+      tr.appendChild(th);
+  }
+  var count = 0;
+  //Construct CELLS
+  for (var i = 0; i < 1 ; i++) {
+    tr = table.insertRow(-1);
+    for (var j = 0; j < arr.length; j++) {
+      var td = document.createElement('td'); 
+      td.setAttribute("id",'td'+count);
+      tr.appendChild(td); 
+      count=count+1; 
+      }
+    }
+}//scoretable
+
+  </script>
+    
+</body>
+</html>
